@@ -20,12 +20,12 @@ func (h Handler) CreateKasKey(
 	metadata *common.MetadataMutable,
 ) (*policy.AsymmetricKey, error) {
 	req := kasregistry.CreateKeyRequest{
-		KasId:            kasId,
-		KeyId:            keyId,
-		KeyAlgorithm:     alg,
-		KeyMode:          mode,
-		PublicKeyCtx:     pubKeyCtx,
-		PrivateKeyCtx:    privKeyCtx,
+		KasId:        kasId,
+		KeyId:        keyId,
+		KeyAlgorithm: alg,
+		KeyMode:      mode,
+		// PublicKeyCtx:     pubKeyCtx,
+		// PrivateKeyCtx:    privKeyCtx,
 		ProviderConfigId: providerConfigId,
 		Metadata:         metadata,
 	}
@@ -35,7 +35,7 @@ func (h Handler) CreateKasKey(
 		return nil, err
 	}
 
-	return resp.GetKey(), nil
+	return resp.GetKasKey().GetKey(), nil
 }
 
 func (h Handler) GetKasKey(ctx context.Context, id string, keyId string) (*policy.AsymmetricKey, error) {
@@ -45,8 +45,8 @@ func (h Handler) GetKasKey(ctx context.Context, id string, keyId string) (*polic
 			Id: id,
 		}
 	} else if keyId != "" {
-		req.Identifier = &kasregistry.GetKeyRequest_KeyId{
-			KeyId: keyId,
+		req.Identifier = &kasregistry.GetKeyRequest_Id{
+			Id: keyId,
 		}
 	}
 
@@ -55,7 +55,7 @@ func (h Handler) GetKasKey(ctx context.Context, id string, keyId string) (*polic
 		return nil, err
 	}
 
-	return resp.GetKey(), nil
+	return resp.GetKasKey().GetKey(), nil
 }
 
 func (h Handler) UpdateKasKey(ctx context.Context, id string, status policy.KeyStatus, metadata *common.MetadataMutable, behavior common.MetadataUpdateEnum) (*policy.AsymmetricKey, error) {
@@ -71,7 +71,7 @@ func (h Handler) UpdateKasKey(ctx context.Context, id string, status policy.KeyS
 		return nil, err
 	}
 
-	return resp.GetKey(), nil
+	return resp.GetKasKey().GetKey(), nil
 }
 
 func (h Handler) ListKasKeys(
@@ -80,7 +80,7 @@ func (h Handler) ListKasKeys(
 	algorithm policy.Algorithm,
 	kasId string,
 	kasName string,
-	kasUri string) ([]*policy.AsymmetricKey, *policy.PageResponse, error) {
+	kasUri string) ([]*policy.KasKey, *policy.PageResponse, error) {
 	req := kasregistry.ListKeysRequest{
 		Pagination: &policy.PageRequest{
 			Limit:  limit,
@@ -108,5 +108,5 @@ func (h Handler) ListKasKeys(
 		return nil, nil, err
 	}
 
-	return resp.GetKeys(), resp.GetPagination(), nil
+	return resp.GetKasKeys(), resp.GetPagination(), nil
 }

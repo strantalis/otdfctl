@@ -118,7 +118,7 @@ func statusToEnum(status string) (policy.KeyStatus, error) {
 
 func enumToMode(enum policy.KeyMode) (string, error) {
 	switch enum { //nolint:exhaustive // UNSPECIFIED is not needed here
-	case policy.KeyMode_KEY_MODE_LOCAL:
+	case policy.KeyMode_KEY_MODE_CONFIG_ROOT_KEY:
 		return "local", nil
 	case policy.KeyMode_KEY_MODE_REMOTE:
 		return "remote", nil
@@ -130,7 +130,7 @@ func enumToMode(enum policy.KeyMode) (string, error) {
 func modeToEnum(mode string) (policy.KeyMode, error) {
 	switch strings.ToLower(mode) {
 	case "local":
-		return policy.KeyMode_KEY_MODE_LOCAL, nil
+		return policy.KeyMode_KEY_MODE_CONFIG_ROOT_KEY, nil
 	case "remote":
 		return policy.KeyMode_KEY_MODE_REMOTE, nil
 	default:
@@ -201,8 +201,8 @@ func getTableRows(asymkey *policy.AsymmetricKey) [][]string {
 		{"Algorithm", algStr},
 		{"Status", statusStr},
 		{"Mode", modeStr},
-		{"PubKeyCtx", string(asymkey.GetPublicKeyCtx())},
-		{"PrivateKeyCtx", string(asymkey.GetPrivateKeyCtx())},
+		// {"PubKeyCtx", string(asymkey.GetPublicKeyCtx())},
+		// {"PrivateKeyCtx", string(asymkey.GetPrivateKeyCtx())},
 		{"ProviderConfig", string(providerConfig)},
 	}
 	return rows
@@ -233,7 +233,7 @@ func policy_createKASKey(cmd *cobra.Command, args []string) {
 
 	var pubKeyCtxBytes []byte
 	var privKeyCtxBytes []byte
-	if mode == policy.KeyMode_KEY_MODE_LOCAL {
+	if mode == policy.KeyMode_KEY_MODE_CONFIG_ROOT_KEY {
 		wrappingKey := c.Flags.GetRequiredString("wrappingKey")
 		privateKey, publicKey, err := generateKeys(wrappingKey, alg)
 		if err != nil {
@@ -407,41 +407,41 @@ func policy_listKASKey(cmd *cobra.Command, args []string) {
 		table.NewFlexColumn("updated_at", "Updated At", cli.FlexColumnWidthOne),
 	)
 	rows := []table.Row{}
-	for _, key := range keys {
-		metadata := cli.ConstructMetadata(key.GetMetadata())
-		var providerConfig []byte
-		if key.GetProviderConfig() != nil {
-			providerConfig, err = proto.Marshal(key.GetProviderConfig())
-			if err != nil {
-				cli.ExitWithError("Failed to marshal provider config", err)
-			}
-		}
-		statusStr, err := enumToStatus(key.GetKeyStatus())
-		if err != nil {
-			cli.ExitWithError("Failed to convert status", err)
-		}
-		modeStr, err := enumToMode(key.GetKeyMode())
-		if err != nil {
-			cli.ExitWithError("Failed to convert mode", err)
-		}
-		algStr, err := enumToAlg(key.GetKeyAlgorithm())
-		if err != nil {
-			cli.ExitWithError("Failed to convert algorithm", err)
-		}
-		rows = append(rows, table.NewRow(table.RowData{
-			"id":             key.GetId(),
-			"keyId":          key.GetKeyId(),
-			"keyAlgorithm":   algStr,
-			"keyStatus":      statusStr,
-			"keyMode":        modeStr,
-			"pubKeyCtx":      string(key.GetPublicKeyCtx()),
-			"privateKeyCtx":  string(key.GetPrivateKeyCtx()),
-			"providerConfig": string(providerConfig),
-			"labels":         metadata["Labels"],
-			"created_at":     metadata["Created At"],
-			"updated_at":     metadata["Updated At"],
-		}))
-	}
+	// for _, key := range keys {
+	// 	metadata := cli.ConstructMetadata(key.GetMetadata())
+	// 	var providerConfig []byte
+	// 	if key.GetProviderConfig() != nil {
+	// 		providerConfig, err = proto.Marshal(key.GetProviderConfig())
+	// 		if err != nil {
+	// 			cli.ExitWithError("Failed to marshal provider config", err)
+	// 		}
+	// 	}
+	// 	statusStr, err := enumToStatus(key.GetKeyStatus())
+	// 	if err != nil {
+	// 		cli.ExitWithError("Failed to convert status", err)
+	// 	}
+	// 	modeStr, err := enumToMode(key.GetKeyMode())
+	// 	if err != nil {
+	// 		cli.ExitWithError("Failed to convert mode", err)
+	// 	}
+	// 	algStr, err := enumToAlg(key.GetKeyAlgorithm())
+	// 	if err != nil {
+	// 		cli.ExitWithError("Failed to convert algorithm", err)
+	// 	}
+	// 	rows = append(rows, table.NewRow(table.RowData{
+	// 		"id":             key.GetId(),
+	// 		"keyId":          key.GetKeyId(),
+	// 		"keyAlgorithm":   algStr,
+	// 		"keyStatus":      statusStr,
+	// 		"keyMode":        modeStr,
+	// 		"pubKeyCtx":      string(key.GetPublicKeyCtx()),
+	// 		"privateKeyCtx":  string(key.GetPrivateKeyCtx()),
+	// 		"providerConfig": string(providerConfig),
+	// 		"labels":         metadata["Labels"],
+	// 		"created_at":     metadata["Created At"],
+	// 		"updated_at":     metadata["Updated At"],
+	// 	}))
+	// }
 	t = t.WithRows(rows)
 	t = cli.WithListPaginationFooter(t, page)
 	HandleSuccess(cmd, "", t, keys)

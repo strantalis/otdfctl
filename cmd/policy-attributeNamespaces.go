@@ -29,15 +29,15 @@ func policy_getAttributeNamespace(cmd *cobra.Command, args []string) {
 		cli.ExitWithError(errMsg, err)
 	}
 
-	keyIds := make([]string, len(ns.GetKeys()))
-	for i, k := range ns.GetKeys() {
-		keyIds[i] = k.GetId()
-	}
+	// keyIds := make([]string, len(ns.GetKeys()))
+	// for i, k := range ns.GetKeys() {
+	// 	keyIds[i] = k.GetId()
+	// }
 
 	rows := [][]string{
 		{"Id", ns.GetId()},
 		{"Name", ns.GetName()},
-		{"Associated Keys", cli.CommaSeparated(keyIds)},
+		// {"Associated Keys", cli.CommaSeparated(keyIds)},
 	}
 	if mdRows := getMetadataRows(ns.GetMetadata()); mdRows != nil {
 		rows = append(rows, mdRows...)

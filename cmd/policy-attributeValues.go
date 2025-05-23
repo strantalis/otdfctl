@@ -424,16 +424,16 @@ func init() {
 }
 
 func handleValueSuccess(cmd *cobra.Command, v *policy.Value) {
-	keyIds := make([]string, len(v.GetKeys()))
-	for i, k := range v.GetKeys() {
-		keyIds[i] = k.GetId()
-	}
+	// keyIds := make([]string, len(v.GetKeys()))
+	// for i, k := range v.GetKeys() {
+	// 	keyIds[i] = k.GetId()
+	// }
 
 	rows := [][]string{
 		{"Id", v.GetId()},
 		{"FQN", v.GetFqn()},
 		{"Value", v.GetValue()},
-		{"Associated Keys", cli.CommaSeparated(keyIds)},
+		// {"Associated Keys", cli.CommaSeparated(keyIds)},
 	}
 	if mdRows := getMetadataRows(v.GetMetadata()); mdRows != nil {
 		rows = append(rows, mdRows...)

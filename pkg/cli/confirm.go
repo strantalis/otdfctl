@@ -82,3 +82,51 @@ func AskForSecret(message string) string {
 	}
 	return secret
 }
+
+// PromptWithChoices displays a prompt with a list of choices and returns the selected choice.
+func PromptWithChoices(title string, choiceStrings []string) (string, error) {
+	if len(choiceStrings) == 0 {
+		return "", fmt.Errorf("no choices provided to PromptWithChoices")
+	}
+
+	options := make([]huh.Option[string], len(choiceStrings))
+	for i, choice := range choiceStrings {
+		options[i] = huh.NewOption(choice, choice)
+	}
+
+	var selectedValue string
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				Title(title).
+				Options(options...).
+				Value(&selectedValue),
+		),
+	)
+
+	err := form.Run()
+	if err != nil {
+		// Check if the error is due to user interruption (e.g., Ctrl+C)
+		// huh.ErrUserAborted is the typical error for this.
+		if err == huh.ErrUserAborted {
+			return "", err // Propagate the specific error
+		}
+		return "", fmt.Errorf("prompt failed: %w", err)
+	}
+
+	if selectedValue == "" && len(choiceStrings) > 0 {
+		// This case should ideally not happen if huh.Select works as expected
+		// and a default is selected or user makes a selection.
+		// If there's only one option, huh might auto-select it.
+		// If multiple options and no default, user must select one.
+		// For safety, if it's empty, and choices were present, consider it an issue.
+		// However, if huh.Run() returns nil error, a value should be set.
+		// If only one choice, it might be pre-selected.
+		if len(choiceStrings) == 1 {
+			return choiceStrings[0], nil
+		}
+		return "", fmt.Errorf("no selection made or prompt issue, though no direct error reported")
+	}
+
+	return selectedValue, nil
+}

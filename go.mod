@@ -4,6 +4,10 @@ go 1.24.0
 
 toolchain go1.24.2
 
+replace github.com/opentdf/platform/protocol/go => ../platform/protocol/go
+
+replace github.com/opentdf/platform/sdk => ../platform/sdk
+
 require (
 	github.com/adrg/frontmatter v0.2.0
 	github.com/charmbracelet/bubbles v0.21.0
@@ -19,16 +23,16 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/opentdf/platform/lib/flattening v0.1.3
 	github.com/opentdf/platform/lib/ocrypto v0.1.9
-	github.com/opentdf/platform/protocol/go v0.3.3-0.20250430180645-a2253982731c
+	github.com/opentdf/platform/protocol/go v0.3.3
 	github.com/opentdf/platform/sdk v0.4.5-0.20250430180645-a2253982731c
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0
 	github.com/zalando/go-keyring v0.2.6
 	github.com/zitadel/oidc/v3 v3.35.0
-	golang.org/x/oauth2 v0.29.0
+	golang.org/x/oauth2 v0.30.0
 	golang.org/x/term v0.30.0
-	google.golang.org/grpc v1.71.0
+	google.golang.org/grpc v1.72.1
 	google.golang.org/protobuf v1.36.6
 )
 
